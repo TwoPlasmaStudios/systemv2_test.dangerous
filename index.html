@@ -8,7 +8,7 @@
         * { margin: 0; padding: 0; box-sizing: border-box; outline: none; }
         body, html { width: 100%; height: 100%; background-color: #000; color: #0f0; font-family: 'Courier New', Courier, monospace; overflow: hidden; cursor: none; }
 
-        /* Matrix Kod Yağmuru (Sadece Terminal Arkasında Kalacak) */
+        /* Matrix Kod Yağmuru */
         #matrix-canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 1; opacity: 0.15; }
 
         /* Ana Terminal Ekranı */
@@ -17,7 +17,7 @@
         
         #log-container { flex-grow: 1; overflow-y: auto; margin-bottom: 20px; font-size: 14px; line-height: 1.6; text-shadow: 0 0 5px #0f0; }
         
-        /* Kullanıcı İnteraktif Giriş Alanı */
+        /* Kullanıcı Giriş Alanı */
         #input-area { display: flex; align-items: center; font-size: 16px; color: #00ff00; border-top: 1px dashed #0f0; padding-top: 15px; }
         #prompt-symbol { margin-right: 10px; font-weight: bold; }
         #user-input { background: transparent; border: none; color: #0ff; font-family: 'Courier New', monospace; font-size: 16px; width: 100%; text-shadow: 0 0 8px #0ff; }
@@ -27,11 +27,10 @@
         .log-success { color: #0ff !important; font-weight: bold; text-shadow: 0 0 8px #0ff; }
         .log-warning { color: #ff0 !important; }
 
-        /* Lütfen Bekleyin Ekranı (Z-Index En Üstte Olacak Şekilde Sabitlendi) */
+        /* Kırmızı Yükleme Çubuklu Bekleme Ekranı */
         #waiting-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: #000; z-index: 100; flex-direction: column; align-items: center; justify-content: center; color: #ff0000; text-shadow: 0 0 30px #f00; font-family: 'Courier New', monospace; }
         #waiting-overlay h1 { font-size: 2.8em; letter-spacing: 5px; margin-bottom: 30px; animation: glitch 0.3s infinite; text-align: center; }
         
-        /* Bekleme Ekranı Yükleme Çubuğu */
         .wait-progress-bar { border: 2px solid #f00; width: 350px; height: 35px; position: relative; overflow: hidden; box-shadow: 0 0 20px rgba(255, 0, 0, 0.7); background: #110000; display: block !important; }
         #wait-progress-fill { background: #f00; width: 0%; height: 100%; box-shadow: 0 0 15px #f00; }
         #wait-progress-text { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); color: #fff; font-weight: bold; font-size: 16px; text-shadow: 1px 1px 3px #000; z-index: 105; }
@@ -39,16 +38,16 @@
         /* 5 Saniyelik Karanlık Katmanı */
         #darkness-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: #000000; z-index: 200; }
 
-        /* Kesinlikle Reklamsız Rickroll Kıyamet Ekranı */
+        /* Yerel Video Ekranı */
         #rickroll-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 9999; background: #000; overflow: hidden; }
-        #rick-video { position: absolute; width: 140%; height: 140%; left: -20%; top: -20%; object-fit: cover; filter: grayscale(100%) brightness(1.8) contrast(2.5) hue-rotate(130deg); }
+        #rick-video { position: absolute; width: 100%; height: 100%; object-fit: cover; }
 
-        /* Başlangıç Karşılama Ekranı */
+        /* Başlangıç Ekranı */
         #start-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 1000; cursor: pointer; color: #f00; text-shadow: 0 0 20px #f00; }
         #start-overlay h1 { font-size: 2.3em; margin-bottom: 20px; text-transform: uppercase; text-align: center; padding: 0 20px; }
         #start-overlay p { font-size: 1.2em; animation: pulse 1s infinite; }
 
-        /* Şiddetli Deprem Efekti */
+        /* Deprem Efekti */
         .earthquake { animation: hardShake 0.05s infinite !important; }
 
         @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
@@ -79,7 +78,7 @@
 
     <canvas id="matrix-canvas"></canvas>
 
-    <!-- Giriş Onay Ekranı -->
+    <!-- Giriş Onay Ekranı (Tarayıcının ses engeline takılmamak için şart) -->
     <div id="start-overlay">
         <h1>⚠️ SİSTEM ENJEKSİYON MERKEZİ ⚠️</h1>
         <p>[ PROTOKOLÜ VE MATRIX AKIŞINI BAŞLATMAK İÇİN TIKLAYIN ]</p>
@@ -108,15 +107,16 @@
     <!-- 5 Saniyelik Boşluk/Karanlık Katmanı -->
     <div id="darkness-overlay"></div>
 
-    <!-- REKLAMSIZ RICKROLL VİDEOSU -->
+    <!-- YEREL VİDEO EKRANI -->
     <div id="rickroll-overlay">
-        <video id="rick-video" preload="auto" loop crossorigin="anonymous">
-            <source src="https://upload.wikimedia.org/wikipedia/commons/c/c8/Rick_Astley_-_Never_Gonna_Give_You_Up%20%28low_quality%29.mp4" type="video/mp4">
+        <!-- src="vid.mp4" olarak güncellendi -->
+        <video id="rick-video" preload="auto" loop>
+            <source src="vid.mp4" type="video/mp4">
         </video>
     </div>
 
     <script>
-        // Arka Plandaki Matrix Kod Yağmuru
+        // Matrix Kod Yağmuru
         const canvas = document.getElementById('matrix-canvas');
         const ctx = canvas.getContext('2d');
         canvas.width = window.innerWidth;
@@ -139,7 +139,7 @@
         }
         setInterval(drawMatrix, 30);
 
-        // Değişken Tanımlamaları
+        // Elementler ve Değişkenler
         const startOverlay = document.getElementById('start-overlay');
         const logContainer = document.getElementById('log-container');
         const userInput = document.getElementById('user-input');
@@ -169,7 +169,7 @@
             });
         }
 
-        // İnteraktif Soru Öncesi Uzun Süreli Akış
+        // İnteraktif Soru Öncesi Başlangıç Akışı
         async function startHackingSequence() {
             userInput.disabled = true;
             await addLog("[BOOT] Çekirdek modülleri optimize ediliyor...", 'info', 150);
@@ -186,7 +186,7 @@
             step = 1;
         }
 
-        // Kullanıcı Etkileşim Yönetimi
+        // Girişleri Yönetme
         userInput.addEventListener('keydown', async (e) => {
             if (e.key === 'Enter') {
                 const val = userInput.value.trim().toLowerCase();
@@ -215,35 +215,33 @@
                     await addLog("[FATAL ERROR] ANAHTAR UYUŞMAZLIĞI! HEDEF SİSTEM LOGLARI KİLİTLEDİ!", 'error', 600);
                     await addLog("[SYSTEM] Acil durum bypass motoru çalıştırılıyor...", 'warning', 400);
                     
-                    // Sayıların ve blokların akış ekranı
+                    // Akış Hızlandırma Ekranı
                     await addLog("[INFO] Ham bellek blokları manipüle ediliyor...", 'info', 400);
-                    await addLog("[DATA] Blok 0x7FFF64: BAŞARILI", 'success', 300);
+                    await addLog("[DATA] Blok 0x7FFF64: BAŞARILI", 'success', 200);
                     await addLog("[DATA] Blok 0x8A2C12: VERİ ALINDI", 'success', 200);
                     await addLog("[DATA] Blok 0x3C1D89: BYPASS EDİLDİ", 'success', 200);
                     await addLog("[PROGRESS] Sunucu imtiyazları zorlanıyor...", 'info', 300);
                     await addLog("[SUCCESS] Kök (Root) yetkileri zorla alındı.", 'success', 400);
                     
-                    // Kesin olarak Bekleme ekranına geçiş
                     setTimeout(triggerWaitingScreen, 1000);
                 }
             }
         });
 
-        // Kırmızı Yükleme Çubuğu Aşaması
+        // Bekleme Ekranı ve Çubuk Kontrolü
         function triggerWaitingScreen() {
             document.getElementById('terminal-overlay').style.display = 'none';
             waitingOverlay.style.display = 'flex';
             
             let progress = 0;
             const interval = setInterval(() => {
-                progress += Math.random() * 2.5 + 0.5; // Yavaş yavaş dolma hilesi
+                progress += Math.random() * 3 + 0.5;
                 if (progress >= 100) {
                     progress = 100;
                     clearInterval(interval);
                     waitProgressFill.style.width = '100%';
                     waitProgressText.textContent = '100%';
-                    // 100% olunca 5 saniyelik mutlak karanlığa geç
-                    setTimeout(triggerDarkness, 1000);
+                    setTimeout(triggerDarkness, 1200);
                 } else {
                     const rounded = Math.floor(progress);
                     waitProgressFill.style.width = rounded + '%';
@@ -252,22 +250,14 @@
             }, 100);
         }
 
-        // 5 Saniyelik Karanlık/Sessizlik Odası
-        function triggerDarkness() {
-            waitingOverlay.style.display = 'none';
-            darknessOverlay.style.display = 'block';
-            
-            // Tam 5 saniye boyunca kapkaranlık kalır (Arkadaşın bilgisayar çöktü sanacak)
-            setTimeout(triggerRickroll, 5000);
-        }
-
-        // Kesinlikle Reklamsız Rickroll Patlaması
+        // 5 Saniyelik Karartma
         function triggerDarkness() {
             waitingOverlay.style.display = 'none';
             darknessOverlay.style.display = 'block';
             setTimeout(triggerRickroll, 5000);
         }
 
+        // Rickroll Başlangıcı (Deprem ve Sesli Video)
         function triggerRickroll() {
             darknessOverlay.style.display = 'none';
             rickrollOverlay.style.display = 'block';
@@ -277,16 +267,15 @@
             rickVideo.muted = false;
             rickVideo.volume = 1.0;
             
-            // Wikimedia mp4 doğrudan oynatma tetiklemesi
             const playPromise = rickVideo.play();
             if (playPromise !== undefined) {
                 playPromise.catch(error => {
-                    console.log("Oynatma hatası:", error);
+                    console.log("Tarayıcı oynatma engeline takıldı:", error);
                 });
             }
         }
 
-        // Tıklama ile Başlatma
+        // Tıklama ile Başlatıcı
         startOverlay.addEventListener('click', () => {
             startOverlay.style.display = 'none';
             startHackingSequence();
