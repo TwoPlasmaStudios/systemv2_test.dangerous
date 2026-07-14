@@ -3,88 +3,127 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>⚡ SİSTEM KRİTİK ⚡</title>
+    <title>⚡ SİSTEME ERİŞİM SAĞLANDI ⚡</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; outline: none; }
         body, html { width: 100%; height: 100%; background-color: #000; color: #0f0; font-family: 'Courier New', Courier, monospace; overflow: hidden; cursor: none; }
 
-        /* Arka Plan Kod Yağmuru */
-        #matrix-canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; opacity: 0.15; }
+        /* Matrix Kod Yağmuru */
+        #matrix-canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; opacity: 0.12; }
 
-        /* Ana Terminal */
-        #terminal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 20, 0, 0.85); display: flex; align-items: center; justify-content: center; z-index: 10; font-weight: bold; text-shadow: 0 0 10px #0f0; }
-        #terminal-content { width: 90%; max-width: 800px; padding: 30px; border: 2px solid #0f0; border-radius: 10px; box-shadow: 0 0 30px rgba(0, 255, 0, 0.3); background-color: rgba(0, 0, 0, 0.9); }
+        /* Terminal Arayüzü */
+        #terminal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 15, 0, 0.9); display: flex; align-items: center; justify-content: center; z-index: 10; }
+        #terminal-content { width: 90%; max-width: 850px; height: 80vh; padding: 30px; border: 2px solid #0f0; border-radius: 5px; box-shadow: 0 0 40px rgba(0, 255, 0, 0.2); background-color: rgba(0, 0, 0, 0.95); display: flex; flex-direction: column; justify-content: space-between; }
+        
+        #log-container { flex-grow: 1; overflow-y: auto; margin-bottom: 20px; font-size: 15px; line-height: 1.6; text-shadow: 0 0 5px #0f0; }
+        
+        /* Kullanıcı İnteraktif Alanı */
+        #input-area { display: flex; align-items: center; font-size: 16px; color: #00ff00; border-top: 1px dashed #0f0; padding-top: 15px; }
+        #prompt-symbol { margin-right: 10px; font-weight: bold; }
+        #user-input { background: transparent; border: none; color: #0ff; font-family: 'Courier New', monospace; font-size: 16px; width: 100%; text-shadow: 0 0 8px #0ff; }
 
-        /* Log ve Bar Stilleri */
-        .log { margin-bottom: 15px; opacity: 0; animation: fadeIn 0.1s forwards; }
-        .log-error { color: #f00 !important; font-weight: bold; text-shadow: 0 0 15px #f00; }
-        .log-success { color: #0ff !important; font-weight: bold; }
-        .progress-bar { border: 2px solid #0f0; width: 100%; height: 25px; margin: 20px 0; overflow: hidden; position: relative; }
-        #progress-fill { background: linear-gradient(90deg, #0f0 0%, #0ff 100%); width: 0%; height: 100%; transition: width 0.3s ease; box-shadow: 0 0 20px rgba(0, 255, 0, 0.8); }
-        #progress-text { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); color: #000; font-weight: bold; z-index: 2; }
+        .log { margin-bottom: 8px; }
+        .log-error { color: #f00 !important; text-shadow: 0 0 10px #f00; font-weight: bold; }
+        .log-success { color: #0ff !important; font-weight: bold; text-shadow: 0 0 8px #0ff; }
+        .log-warning { color: #ff0 !important; }
 
-        /* Screamer Sahnesi */
-        #rickroll-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 9999; background: #000; }
-        #rick-video-container { position: absolute; width: 150%; height: 150%; left: -25%; top: -25%; filter: grayscale(100%) brightness(1.5) contrast(2) hue-rotate(90deg); animation: chaoticVibration 0.05s infinite; }
-        iframe { width: 100%; height: 100%; border: none; }
+        /* Lütfen Bekleyin Ekranı */
+        #waiting-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: #000; z-index: 500; flex-direction: column; align-items: center; justify-content: center; color: #ff0000; text-shadow: 0 0 30px #f00; font-family: 'Courier New', monospace; }
+        #waiting-overlay h1 { font-size: 3em; letter-spacing: 5px; margin-bottom: 25px; animation: glitch 0.3s infinite; text-align: center; }
+        
+        /* Bekleme Ekranı Yükleme Çubuğu */
+        .wait-progress-bar { border: 2px solid #f00; width: 300px; height: 30px; position: relative; overflow: hidden; box-shadow: 0 0 15px rgba(255, 0, 0, 0.5); }
+        #wait-progress-fill { background: #f00; width: 0%; height: 100%; transition: width 0.1s linear; }
+        #wait-progress-text { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); color: #fff; font-weight: bold; font-size: 14px; text-shadow: 1px 1px 2px #000; z-index: 2; }
 
-        /* Başlangıç Tıklama Ekranı */
-        #start-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 100; cursor: pointer; color: #f00; text-shadow: 0 0 20px #f00; }
-        #start-overlay h1 { font-size: 3em; margin-bottom: 20px; text-transform: uppercase; }
+        /* Sessizlik/Karanlık Ekranı (5 saniye) */
+        #darkness-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: #000000; z-index: 1000; }
+
+        /* Çılgın Rickroll Screamer Ekranı */
+        #rickroll-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 9999; background: #000; overflow: hidden; }
+        #rick-video-container { position: absolute; width: 140%; height: 140%; left: -20%; top: -20%; filter: grayscale(100%) brightness(1.7) contrast(2.5) hue-rotate(120deg); }
+
+        /* Başlangıç Karşılama Ekranı */
+        #start-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 1001; cursor: pointer; color: #f00; text-shadow: 0 0 20px #f00; }
+        #start-overlay h1 { font-size: 2.5em; margin-bottom: 20px; text-transform: uppercase; text-align: center; }
         #start-overlay p { font-size: 1.2em; animation: pulse 1s infinite; }
 
-        /* Animasyonlar */
-        @keyframes fadeIn { to { opacity: 1; } }
+        /* Sarsıntı ve Ekran Sallanma Efektleri */
+        .earthquake { animation: hardShake 0.08s infinite !important; }
+
         @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
-        @keyframes chaoticVibration {
-            0% { transform: translate(0, 0) scale(1) rotate(0deg); }
-            20% { transform: translate(-5px, 8px) scale(1.02) rotate(1deg); }
-            40% { transform: translate(7px, -4px) scale(0.98) rotate(-1deg); }
-            60% { transform: translate(-8px, -6px) scale(1.03) rotate(0.5deg); }
-            80% { transform: translate(9px, 5px) scale(0.97) rotate(-0.5deg); }
-            100% { transform: translate(0, 0) scale(1) rotate(0deg); }
+        
+        @keyframes glitch {
+            0% { transform: skew(0deg); }
+            20% { transform: skew(-3deg); color: #0ff; }
+            40% { transform: skew(3deg); }
+            60% { transform: skew(-1deg); color: #f0f; }
+            80% { transform: skew(2deg); }
+            100% { transform: skew(0deg); }
+        }
+
+        @keyframes hardShake {
+            0% { transform: translate(0, 0) rotate(0deg); }
+            10% { transform: translate(-12px, -8px) rotate(-1.5deg); }
+            20% { transform: translate(14px, 10px) rotate(1.5deg); }
+            30% { transform: translate(-10px, 12px) rotate(-0.5deg); }
+            40% { transform: translate(12px, -14px) rotate(2deg); }
+            50% { transform: translate(-15px, 8px) rotate(-1deg); }
+            60% { transform: translate(10px, -12px) rotate(1.5deg); }
+            70% { transform: translate(-12px, 14px) rotate(-2deg); }
+            80% { transform: translate(15px, -10px) rotate(1deg); }
+            90% { transform: translate(-10px, -14px) rotate(-1.5deg); }
+            100% { transform: translate(0, 0) rotate(0deg); }
         }
     </style>
 </head>
-<body>
+<body id="main-body">
 
-    <!-- Arka Plan Kod Yağmuru (Canvas) -->
     <canvas id="matrix-canvas"></canvas>
 
-    <!-- Terminal Ekranı -->
+    <!-- İlk Tıklama -->
+    <div id="start-overlay">
+        <h1>⚠️ GÜVENLİK SİSTEMİ UYARISI ⚠️</h1>
+        <p>[ PROTOKOLÜ BAŞLATMAK İÇİN TIKLAYIN ]</p>
+    </div>
+
+    <!-- Terminal -->
     <div id="terminal-overlay">
         <div id="terminal-content">
-            <div id="logs"></div>
-            <div class="progress-bar">
-                <div id="progress-fill"></div>
-                <div id="progress-text">0%</div>
+            <div id="log-container"></div>
+            <div id="input-area">
+                <span id="prompt-symbol">root@bypass:~#</span>
+                <input type="text" id="user-input" autofocus autocomplete="off" placeholder="Komut yazın veya onaylayın...">
             </div>
         </div>
     </div>
 
-    <!-- Screamer Sahnesi -->
+    <!-- Lütfen Bekleyin ve Yükleme Çubuğu Ekranı -->
+    <div id="waiting-overlay">
+        <h1>⚠️ LÜTFEN BEKLEYİN... ⚠️</h1>
+        <div class="wait-progress-bar">
+            <div id="wait-progress-fill"></div>
+            <div id="wait-progress-text">0%</div>
+        </div>
+    </div>
+
+    <!-- 5 Saniyelik Karanlık Katmanı -->
+    <div id="darkness-overlay"></div>
+
+    <!-- Screamer Video Sahnesi -->
     <div id="rickroll-overlay">
         <div id="rick-video-container">
             <iframe id="rick-video" src="" allow="autoplay; encrypted-media" allowfullscreen></iframe>
         </div>
     </div>
 
-    <!-- Başlangıç Tıklama Ekranı -->
-    <div id="start-overlay">
-        <h1 class="log-error">⚠️ KRİTİK ERİŞİM HATASI ⚠️</h1>
-        <p>[ DEVAM ETMEK İÇİN TIKLAYIN ]</p>
-    </div>
-
     <script>
-        // Matrix Yağmuru Scripti
+        // Matrix Yağmuru
         const canvas = document.getElementById('matrix-canvas');
         const ctx = canvas.getContext('2d');
         canvas.width = window.innerWidth;
         canvas.height = window.innerHeight;
-        const katakana = "アァカサタナハマヤャラワガザダバパイィキシチニヒミリヰギジヂビピウゥクスツヌフムユュルグズブヅプエェケセテネヘメレヱゲゼデベペオォコソトノホモヨョロヲゴゾドボポヴッン";
-        const latin = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-        const nums = "0123456789";
-        const alphabet = katakana + latin + nums;
+        const alphabet = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZアイウエオカキクケコサシスセソ";
         const fontSize = 16;
         const columns = canvas.width / fontSize;
         const rainDrops = Array(Math.floor(columns)).fill(1);
@@ -102,69 +141,134 @@
         }
         setInterval(drawMatrix, 30);
 
-        // Terminal Log Scripti
+        // Elementler
         const startOverlay = document.getElementById('start-overlay');
-        const logsDiv = document.getElementById('logs');
-        const progressFill = document.getElementById('progress-fill');
-        const progressText = document.getElementById('progress-text');
+        const logContainer = document.getElementById('log-container');
+        const userInput = document.getElementById('user-input');
+        const waitingOverlay = document.getElementById('waiting-overlay');
+        const waitProgressFill = document.getElementById('wait-progress-fill');
+        const waitProgressText = document.getElementById('wait-progress-text');
+        const darknessOverlay = document.getElementById('darkness-overlay');
         const rickrollOverlay = document.getElementById('rickroll-overlay');
         const rickVideo = document.getElementById('rick-video');
-        const terminalOverlay = document.getElementById('terminal-overlay');
+        const mainBody = document.getElementById('main-body');
 
-        const hackLogs = [
-            { type: 'info', text: "[BOOT] Sistem çekirdeği yükleniyor..." },
-            { type: 'info', text: "[INFO] Hedef belirlendi: 192.168.1.1" },
-            { type: 'info', text: "[RUN] SSH 'brute force' saldırısı başlatıldı..." },
-            { type: 'error', text: "[ERROR] Güvenlik duvarı v12 aktif. Bypass gerekiyor." },
-            { type: 'success', text: "[OK] Güvenlik duvarı devre dışı bırakıldı." },
-            { type: 'info', text: "[RUN] Root şifresi kırılıyor (SHA-256)..." },
-            { type: 'error', text: "[WARNING] Paket kaybı tespit edildi! Veri bütünlüğü tehlikede." },
-            { type: 'success', text: "[OK] Veri akışı stabilize edildi." },
-            { type: 'info', text: "[RUN] Yönetici paneline sızılıyor..." },
-            { type: 'error', text: "[WARNING] SİSTEM AŞIRI ISINIYOR! VERİ TABANI BOZULDU." },
-            { type: 'success', text: "[BOOT] Kalan veriler kurtarılıyor..." }
-        ];
+        let step = 0;
 
-        let logIndex = 0;
-        let progress = 0;
-
-        function updateProgress() {
-            if (progress < 100) {
-                progress += Math.random() * 2 + 0.5; // Rastgele artış
-                if (progress > 100) progress = 100;
-                const roundedProgress = Math.floor(progress);
-                progressFill.style.width = roundedProgress + '%';
-                progressText.textContent = roundedProgress + '%';
-                setTimeout(updateProgress, Math.random() * 200 + 50); // Hız değişimi
-            }
+        function addLog(text, type = 'info', delay = 0) {
+            return new Promise((resolve) => {
+                setTimeout(() => {
+                    const p = document.createElement('p');
+                    p.className = 'log';
+                    if (type === 'error') p.className += ' log-error';
+                    if (type === 'success') p.className += ' log-success';
+                    if (type === 'warning') p.className += ' log-warning';
+                    p.textContent = text;
+                    logContainer.appendChild(p);
+                    logContainer.scrollTop = logContainer.scrollHeight;
+                    resolve();
+                }, delay);
+            });
         }
 
-        function showLog() {
-            if (logIndex < hackLogs.length) {
-                const logData = hackLogs[logIndex];
-                const p = document.createElement('p');
-                p.className = 'log ' + (logData.type === 'error' ? 'log-error' : logData.type === 'success' ? 'log-success' : '');
-                p.textContent = logData.text;
-                logsDiv.appendChild(p);
-                logIndex++;
-                setTimeout(showLog, Math.random() * 1000 + 200); // Log hızı
-            } else {
-                // Loglar bittiğinde Rickroll'u başlat
-                setTimeout(triggerRickroll, 2000);
-            }
+        async function startHackingSequence() {
+            userInput.disabled = true;
+            await addLog("[BOOT] Sistem çekirdeği yükleniyor...", 'info', 300);
+            await addLog("[INFO] Yerel IP tespit edildi: 192.168.1.1", 'info', 500);
+            await addLog("[WARNING] Güvenlik duvarı v12 aktif! Koruma duvarı kırılıyor...", 'warning', 800);
+            await addLog("[SUCCESS] Güvenlik duvarı BYPASS edildi.", 'success', 600);
+            await addLog("--------------------------------------------------", 'info', 200);
+            await addLog("[!] KRİTİK SORU: Devam etmek istiyor musunuz? (evet/hayır yazın)", 'warning', 400);
+            userInput.disabled = false;
+            userInput.focus();
+            step = 1;
         }
 
+        userInput.addEventListener('keydown', async (e) => {
+            if (e.key === 'Enter') {
+                const val = userInput.value.trim().toLowerCase();
+                userInput.value = '';
+
+                if (step === 1) {
+                    userInput.disabled = true;
+                    if (val === 'evet' || val === 'e' || val === 'yes' || val === 'y') {
+                        await addLog(`> ${val}`, 'success', 100);
+                        await addLog("[OK] Yetkilendirme onaylandı. Anahtarlar oluşturuluyor...", 'success', 500);
+                        await addLog("[!] Güvenli erişim şifresi girin: ", 'warning', 600);
+                        userInput.disabled = false;
+                        userInput.focus();
+                        step = 2;
+                    } else {
+                        await addLog(`> ${val}`, 'error', 100);
+                        await addLog("[ERROR] Reddedildi. 'evet' yazıp onaylayın.", 'error', 500);
+                        userInput.disabled = false;
+                        userInput.focus();
+                    }
+                } 
+                else if (step === 2) {
+                    userInput.disabled = true;
+                    await addLog("> *********", 'success', 100);
+                    await addLog("[RUN] Şifre doğrulanıyor...", 'info', 400);
+                    await addLog("[FATAL ERROR] Yanlış şifre! Sistem kendini imha moduna alıyor!", 'error', 700);
+                    await addLog("[SYSTEM] Zorla sızma (Force Injection) protokolü devreye giriyor...", 'warning', 800);
+                    await addLog("[PROGRESS] Sızılıyor: %25...", 'info', 500);
+                    await addLog("[PROGRESS] Sızılıyor: %55...", 'info', 500);
+                    await addLog("[PROGRESS] Sızılıyor: %99...", 'info', 500);
+                    await addLog("[SUCCESS] BAĞLANTI TAMAMLANDI! VERİ TABANI YÖNLENDİRİLİYOR...", 'success', 400);
+                    
+                    setTimeout(triggerWaitingScreen, 1000);
+                }
+            }
+        });
+
+        // "Lütfen Bekleyin" ve Yükleme Çubuğunu Başlatma
+        function triggerWaitingScreen() {
+            document.getElementById('terminal-overlay').style.display = 'none';
+            waitingOverlay.style.display = 'flex';
+            
+            let progress = 0;
+            // Çubuğun dolma animasyonu (toplamda ~4 saniye sürer)
+            const interval = setInterval(() => {
+                progress += Math.random() * 4 + 1;
+                if (progress >= 100) {
+                    progress = 100;
+                    clearInterval(interval);
+                    waitProgressFill.style.width = '100%';
+                    waitProgressText.textContent = '100%';
+                    // Çubuk dolunca karanlık ekranı tetikle
+                    setTimeout(triggerDarkness, 800);
+                } else {
+                    const rounded = Math.floor(progress);
+                    waitProgressFill.style.width = rounded + '%';
+                    waitProgressText.textContent = rounded + '%';
+                }
+            }, 100);
+        }
+
+        // 5 Saniyelik Karanlık Ekranı
+        function triggerDarkness() {
+            waitingOverlay.style.display = 'none';
+            darknessOverlay.style.display = 'block';
+            
+            // Sessiz ve karanlık 5 saniye bekleme süresi
+            setTimeout(triggerRickroll, 5000);
+        }
+
+        // Büyük Rickroll Patlaması ve Deprem Efekti
         function triggerRickroll() {
-            terminalOverlay.style.display = 'none';
+            darknessOverlay.style.display = 'none';
             rickrollOverlay.style.display = 'block';
-            // Rickroll videosu, ses açık ve siyah-beyaz, bozuk efektli
+            
+            // Ekran çılgınlar gibi sarsılsın
+            mainBody.classList.add('earthquake');
+            
+            // Video en yüksek seste ve kaotik filtrelerle başlar
             rickVideo.src = "https://www.youtube.com/embed/dQw4w9WgXcQ?autoplay=1&mute=0&controls=0&modestbranding=1&rel=0&iv_load_policy=3&disablekb=1";
         }
 
         startOverlay.addEventListener('click', () => {
             startOverlay.style.display = 'none';
-            showLog();
-            updateProgress();
+            startHackingSequence();
         });
     </script>
 </body>
